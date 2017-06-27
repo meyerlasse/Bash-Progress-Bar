@@ -1,34 +1,16 @@
 #!/bin/bash
-# Author : Teddy Skarin
 
-# 1. Create ProgressBar function
-# 1.1 Input is currentState($1) and totalState($2)
-function ProgressBar {
-# Process data
-	let _progress=(${1}*100/${2}*100)/100
-	let _done=(${_progress}*4)/10
-	let _left=40-$_done
-# Build progressbar string lengths
-	_done=$(printf "%${_done}s")
-	_left=$(printf "%${_left}s")
-
-# 1.2 Build progressbar strings and print the ProgressBar line
-# 1.2.1 Output example:
-# 1.2.1.1 Progress : [########################################] 100%
-printf "\rProgress : [${_done// /#}${_left// /-}] ${_progress}%%"
-
+# Create progess bar
+# $1 = Current status
+# $2 = Max status
+_progress_bar () {
+	PROGRESS=$(( 100 * $1 / $2 ))
+	LENGTH=$(( $(tput cols) / 2 ))
+	DONE=$(( LENGTH * $1 / $2 ))
+	LEFT=$(( LENGTH - DONE ))
+	# Build progressbar string lengths
+	DONE=$(printf "%${DONE}s")
+	LEFT=$(printf "%${LEFT}s")
+	# Print progess bar
+	printf "\r%i/%i: [${DONE// /#}${LEFT// /-}] ${PROGRESS}%%" "$1" "$2"
 }
-
-# Variables
-_start=1
-
-# This accounts as the "totalState" variable for the ProgressBar function
-_end=100
-
-# Proof of concept
-for number in $(seq ${_start} ${_end})
-do
-	sleep 0.1
-	ProgressBar ${number} ${_end}
-done
-printf '\nFinished!\n'
